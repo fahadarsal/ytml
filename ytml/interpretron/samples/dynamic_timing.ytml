@@ -1,0 +1,10 @@
+<ytml>
+  <segment>
+    <voice start="+1s" end="+2s">
+      This starts after 1 second.
+    </voice>
+    <voice start="+0.5s" end="+1s">
+      This starts after 0.5 seconds.
+    </voice>
+  </segment>
+</ytml>

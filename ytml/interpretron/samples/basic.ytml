@@ -1,0 +1,10 @@
+<ytml>
+  <segment>
+    <frame>
+      <div>Welcome to the video!</div>
+    </frame>
+    <voice start="0s" end="4s">
+      Hello, welcome to the video!
+    </voice>
+  </segment>
+</ytml>

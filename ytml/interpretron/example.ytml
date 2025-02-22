@@ -1,0 +1,29 @@
+<ytml>
+  <template id="branding">
+    <div class="logo">My Brand</div>
+    <music src="branding-music.mp3" start="0s" end="5s" />
+  </template>
+
+  <segment>
+    <use template="branding" />
+    <frame>
+      <div>Welcome to my channel!</div>
+    </frame>
+    <voice start="0.5s" end="4s">
+      Hello and welcome to my channel.
+    </voice>
+    <music src="intro-music.mp3" start="0s" end="10s" loop="true" />
+  </segment>
+
+  <transition type="fade" duration="2s" />
+
+  <segment>
+    <frame>
+      <img src="product.jpg" />
+    </frame>
+    <voice start="+2s" end="+6s">
+      Check out our amazing product!
+    </voice>
+    <pause duration="3s" />
+  </segment>
+</ytml>

@@ -1,0 +1,10 @@
+<ytml>
+  <segment>
+    <voice start="1s" end="3s">
+      Hello!
+    </voice>
+    <voice start="3s" end="5s">
+      Welcome to YTML Automation.
+    </voice>
+  </segment>
+</ytml>

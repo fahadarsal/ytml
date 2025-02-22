@@ -1,0 +1,5 @@
+<ytml>
+  <segment>
+    <music src="background.mp3" start="0s" end="10s" loop="true" />
+  </segment>
+</ytml>

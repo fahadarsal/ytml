@@ -1,0 +1,5 @@
+<ytml>
+  <segment>
+    <use template="nonexistent" />
+  </segment>
+</ytml>

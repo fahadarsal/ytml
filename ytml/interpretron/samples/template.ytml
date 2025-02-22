@@ -1,0 +1,11 @@
+<ytml>
+  <template id="branding">
+    <div class="logo">My Brand</div>
+  </template>
+  <segment>
+    <use template="branding" />
+    <frame>
+      <div>Welcome to my channel!</div>
+    </frame>
+  </segment>
+</ytml>
