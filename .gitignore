@@ -1,3 +1,5 @@
 ytml.egg-info/
 venv/
 ytml_toolkit.egg-info/
+dist/
+.pypirc
