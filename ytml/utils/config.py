@@ -16,7 +16,7 @@ class Config:
     MERMAID_THEME = 'dark'
 
     # Video Output Settings
-    VIDEO_HEIGHT: str = 1080  # Video resolution (width x height)
+    VIDEO_HEIGHT: str = 1088  # Video resolution (width x height)
     VIDEO_WIDTH: str = 1920
     OUTPUT_FORMAT: str = "mp4"  # Format for the exported video
     BITRATE: str = "5000k"  # Video bitrate (affects quality and file size)

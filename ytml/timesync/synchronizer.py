@@ -1,5 +1,6 @@
 import subprocess
 import os
+from ytml.utils.logger import logger
 from ytml.utils.ffmpeg_wizard import FFMpegWizard
 
 
@@ -41,7 +42,7 @@ class TimeSyncAlchemist:
         timing_metadata = segment["timing_metadata"]
 
         if not audio_files:
-            print(f"No audio files for {video_file}. Copying video as-is.")
+            logger.info(f"No audio files for {video_file}. Copying video as-is.")
             FFMpegWizard.copy_video_as_is(video_file, output_file)
             return
 
@@ -54,17 +55,17 @@ class TimeSyncAlchemist:
 
         # Handle mismatched durations
         if video_duration < audio_duration:
-            print(
+            logger.info(
                 f"Extending video duration from {video_duration}s to {audio_duration}s...")
             extended_video = video_file.replace(".mp4", "_extended.mp4")
             FFMpegWizard.extend_video(
                 video_file, audio_duration - video_duration, extended_video)
             video_file = extended_video
 
-        print(f"Merging audio and video for {video_file}...")
+        logger.info(f"Merging audio and video for {video_file}...")
         FFMpegWizard.merge_audio_with_timing(
             video_file, audio_files, timing_metadata, output_file)
-        print(f"Output saved to {output_file}")
+        logger.info(f"Output saved to {output_file}")
 
     def process_segments(self, segment_data):
         """

@@ -4,6 +4,7 @@ from playwright.sync_api import sync_playwright
 from imageio import get_writer, imread
 import re
 from ytml.animagic.html_preprocesor import HtmlPreprocessor
+from ytml.utils.logger import logger
 from ytml.utils.config import Config
 
 
@@ -17,9 +18,7 @@ class Animagic:
         os.makedirs(self.output_dir, exist_ok=True)
 
         # Configure logging
-        self.logger = logging.getLogger("Animagic")
         self.preprocessor = HtmlPreprocessor(config=self.config)
-        logging.basicConfig(level=logging.INFO)
 
     def _setup_page(self, browser, html_content):
         """
@@ -45,9 +44,9 @@ class Animagic:
                 page = self._setup_page(browser, html_content)
                 page.screenshot(path=output_file)
                 browser.close()
-            self.logger.info(f"Rendered frame saved to {output_file}")
+            logger.info(f"Rendered frame saved to {output_file}")
         except Exception as e:
-            self.logger.error(f"Failed to render frame: {e}")
+            logger.error(f"Failed to render frame: {e}")
 
     def render_animation(self, html_content, segment_id, frame_rate, duration=2):
         """
@@ -78,9 +77,9 @@ class Animagic:
                     page.screenshot(path=frame_path)
                     page.wait_for_timeout(interval * 1000)
                 browser.close()
-            self.logger.info(f"Animation frames saved to {frame_dir}")
+            logger.info(f"Animation frames saved to {frame_dir}")
         except Exception as e:
-            self.logger.error(f"Failed to render animation: {e}")
+            logger.error(f"Failed to render animation: {e}")
 
         return frame_dir
 
@@ -90,7 +89,7 @@ class Animagic:
         """
         segment_videos = []
         for segment_idx, segment in enumerate(parsed_json.get("segments", [])):
-            self.logger.info(f"Processing segment {segment_idx + 1}...")
+            logger.info(f"Processing segment {segment_idx + 1}...")
             frame_files = []
             for frame_idx, frame in enumerate(segment.get("frames", [])):
                 hasAnimation = segment['static'] == False
@@ -129,8 +128,6 @@ class Animagic:
 class VideoComposer:
     def __init__(self, frame_rate):
         self.frame_rate = frame_rate
-        self.logger = logging.getLogger("VideoComposer")
-        logging.basicConfig(level=logging.INFO)
 
     def create_video(self, images, output_file):
         """
@@ -141,6 +138,6 @@ class VideoComposer:
             for image in images:
                 writer.append_data(imread(image))
             writer.close()
-            self.logger.info(f"Video saved to {output_file}")
+            logger.info(f"Video saved to {output_file}")
         except Exception as e:
-            self.logger.error(f"Failed to create video: {e}")
+            logger.error(f"Failed to create video: {e}")

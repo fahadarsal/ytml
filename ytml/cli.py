@@ -1,6 +1,8 @@
 import argparse
+import logging
 import os
 import sys
+from ytml.utils.logger import logger
 from ytml.vocalforge.xi_labs_vocal_forge import ElevenLabsVocalForge
 from ytml.vocalforge.gtts_vocal_forge import gTTSVocalForge
 from ytml.conductor.conductor import Conductor
@@ -29,6 +31,7 @@ def main():
     parser.add_argument("--job", help="Job ID of voiceovers to mix. Requires --skip voiceover.")
     parser.add_argument("--preview", action="store_true", help="Preview HTML only.")
     parser.add_argument("--version", action="store_true", help="Show CLI version.")
+    parser.add_argument("--verbose", action="store_true", help="Enable detailed logging")
 
     args = parser.parse_args()
 
@@ -41,6 +44,12 @@ def main():
     if not args.use_gtts:
         if not check_elevenlabs_key():
             return
+    
+    if args.verbose:
+        logger.setLevel(logging.DEBUG)
+    else:
+        logger.setLevel(logging.WARNING)  # Hide logs by default
+    
 
     config = get_config_from_file(args.input)
 

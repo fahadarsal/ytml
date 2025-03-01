@@ -1,5 +1,7 @@
 from pydub import AudioSegment
 
+from ytml.utils.logger import logger
+
 
 class SoundSmith:
     def mix_audio_with_ducking(self, video_audio_path, music_path, output_path, start_time, end_time, ducking_level=-10):
@@ -35,5 +37,5 @@ class SoundSmith:
 
         # Save the final mixed audio
         final_audio.export(output_path, format="mp3")
-        print(f"Final audio saved to {output_path}")
+        logger.info(f"Final audio saved to {output_path}")
         return output_path

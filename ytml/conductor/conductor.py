@@ -9,7 +9,8 @@ from ytml.animagic.renderer import Animagic, HtmlPreprocessor
 from ytml.timesync.synchronizer import TimeSyncAlchemist
 from ytml.conductor.vid_composer import VidComposer
 from ytml.conductor.local_server import start_local_server
-from ytml.utils.config import get_config_from_file, Config
+from ytml.utils.config import Config
+from ytml.utils.logger import logger
 import uuid
 
 
@@ -35,32 +36,32 @@ class Conductor:
         Main workflow for orchestrating the video generation process.
         """
         local_server = start_local_server()
-        print(f"Starting workflow with Job ID: {self.job_id}...")
+        logger.info(f"Starting workflow with Job ID: {self.job_id}...")
         os.makedirs(self.job_dir, exist_ok=True)
 
         # Step 1: Parse YTML
         if "parse" not in skip_steps:
-            print("Parsing YTML...")
+            logger.info("Parsing YTML...")
             parser = YTMLParser(ytml_file)
             parsed_json = parser.parse()
             with open(f"{self.job_dir}/parsed.json", "w") as f:
                 json.dump(parsed_json, f, indent=2)
-            print("Parsed JSON saved.")
+            logger.info("Parsed JSON saved.")
         else:
-            print("Skipping YTML parsing...")
+            logger.info("Skipping YTML parsing...")
             with open(f"{self.job_dir}/parsed.json", "r") as f:
                 parsed_json = json.load(f)
 
         # Step 2: Generate Voiceovers
         if "voiceover" not in skip_steps:
-            print("Generating voiceovers...")
+            logger.info("Generating voiceovers...")
             voice_metadata = self.vocal_forge.process_voiceovers(
                 parsed_json, output_dir=f"{self.job_dir}/voiceovers")
             with open(f"{self.job_dir}/voice_metadata.json", "w") as f:
                 json.dump(voice_metadata, f, indent=2)
-            print("Voiceover metadata saved.")
+            logger.info("Voiceover metadata saved.")
         else:
-            print("Skipping voiceover generation...")
+            logger.info("Skipping voiceover generation...")
             voice_metadata = []
             if (job):
                 with open(f"tmp/{job}/voice_metadata.json", "r") as f:
@@ -68,21 +69,21 @@ class Conductor:
 
         # Step 3: Render Animations
         if "render" not in skip_steps:
-            print("Rendering video segments...")
+            logger.info("Rendering video segments...")
             self.animagic = Animagic(
                 output_dir=f"{self.job_dir}/renders", config=self.config)
             segment_videos = self.animagic.process_frames(parsed_json)
             with open(f"{self.job_dir}/segment_videos.json", "w") as f:
                 json.dump(segment_videos, f, indent=2)
-            print("Segment videos saved.")
+            logger.info("Segment videos saved.")
         else:
-            print("Skipping video rendering...")
+            logger.info("Skipping video rendering...")
             with open(f"{self.job_dir}/segment_videos.json", "r") as f:
                 segment_videos = json.load(f)
 
         # Step 4: Synchronize Audio and Video
         if "sync" not in skip_steps:
-            print("Synchronizing audio and video...")
+            logger.info("Synchronizing audio and video...")
             segment_data = self.prepare_segment_data(
                 parsed_json, segment_videos, voice_metadata)
             self.alchemist = TimeSyncAlchemist(
@@ -90,31 +91,30 @@ class Conductor:
             synchronized_videos = self.alchemist.process_segments(segment_data)
             with open(f"{self.job_dir}/synchronized_videos.json", "w") as f:
                 json.dump(synchronized_videos, f, indent=2)
-            print("Synchronized videos saved.")
+            logger.info("Synchronized videos saved.")
         else:
-            print("Skipping synchronization...")
+            logger.info("Skipping synchronization...")
             with open(f"{self.job_dir}/synchronized_videos.json", "r") as f:
                 synchronized_videos = json.load(f)
 
         # Step 5: Combine Metadata with Video Paths
-        print("Combining metadata with synchronized video files...")
+        logger.info("Combining metadata with synchronized video files...")
         combined_segments = self.combine_video_metadata(
             synchronized_videos, parsed_json)
-        print("Combined segments:", combined_segments)
 
         # Step 6: Process Tags and Compose Final Video
         if "compose" not in skip_steps:
-            print("Processing tags and composing final video...")
+            logger.info("Processing tags and composing final video...")
             processed_segments = self.vidcomposer.process_segments(
                 combined_segments)
             self.vidcomposer.concatenate_videos(
                 processed_segments, parsed_json["global_music"])
-            print("Final video composed.")
+            logger.info("Final video composed.")
         else:
-            print("Skipping final video composition...")
+            logger.info("Skipping final video composition...")
         if local_server:
             local_server.shutdown()
-        print("Workflow completed!")
+        logger.info("Workflow completed!")
 
     def combine_video_metadata(self, synchronized_files, parsed_json):
         """

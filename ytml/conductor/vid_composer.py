@@ -1,5 +1,6 @@
 import os
 from ytml.conductor.sound_smith import SoundSmith
+from ytml.utils.logger import logger
 from ytml.utils.ffmpeg_wizard import FFMpegWizard
 
 
@@ -36,15 +37,15 @@ class VidComposer:
         music_start = music["start"]
         music_end = music["end"]
 
-        print(f"Adding music from {music_src} to {video_file}...")
+        logger.info(f"Adding music from {music_src} to {video_file}...")
         if os.path.isfile(music_src):
             audio_file = self.soundSmith.mix_audio_with_ducking(
                 video_file, music_src, f'{output_file}.mp3', music_start, music_end)
             FFMpegWizard.merge_audio_with_ducking(
                 video_file, audio_file, f'{output_file}.mp4')
-            print(f"Music added to {video_file}, saved to {output_file}.mp4")
+            logger.info(f"Music added to {video_file}, saved to {output_file}.mp4")
         else:
-            print("Music file not found.")
+            logger.info("Music file not found.")
             return video_file
 
         return output_file+".mp4"
@@ -70,7 +71,7 @@ class VidComposer:
             # Update the output file name to include the merged audio
             self.output_file = final_output
 
-        print(f"Final video saved to {self.output_file}")
+        logger.info(f"Final video saved to {self.output_file}")
 
 
 if __name__ == "__main__":

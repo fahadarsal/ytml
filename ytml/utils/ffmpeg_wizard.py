@@ -8,7 +8,8 @@ class FFMpegWizard:
         """
         Execute an FFmpeg command using subprocess.
         """
-        subprocess.run(command, shell=True, check=True)
+        with open("tmp/ffmpeg_log.txt", "a") as log_file:
+            subprocess.run(command, shell=True, check=True,stdout=log_file,stderr=log_file)
 
     @staticmethod
     def get_video_duration(video_file):
@@ -75,14 +76,13 @@ class FFMpegWizard:
                 normalized_files.append(normalized_file)
 
             # Step 2: Create concat list
-            print(normalized_files)
             concat_file = "concat_list.txt"
             with open(concat_file, "w") as f:
                 for normalized_file in normalized_files:
                     f.write(f"file '{normalized_file}'\n")
 
             # Step 3: Concatenate normalized files
-            command = f"ffmpeg -f concat -safe 0 -i {concat_file} -c copy {output_file}"
+            command = f"ffmpeg -y -f concat -safe 0 -i {concat_file} -c copy {output_file}"
             FFMpegWizard.run_command(command)
 
         finally:
@@ -97,7 +97,7 @@ class FFMpegWizard:
         """
         Mix global audio with the video's existing audio with ducking.
         """
-        command = f"ffmpeg -i {video_file} -i {audio_file} -c:v copy -map 0:v:0 -map 1:a:0 -shortest {mixed_audio_file}"
+        command = f"ffmpeg -i {video_file} -i {audio_file} -c:v copy -map 0:v:0 -map 1:a:0 -shortest {mixed_audio_file} -y"
         FFMpegWizard.run_command(command)
 
     @staticmethod
@@ -114,9 +114,6 @@ class FFMpegWizard:
             audio_inputs.append(f"-i {audio_file}")
         filter_script += f"{''.join([f'[a{i + 1}]' for i in range(len(audio_files))])}amix=inputs={len(audio_files)}[final_audio]"
 
-        # Debugging: Print filter script
-        print("Generated FFmpeg filter_complex script:")
-        print(filter_script)
 
         # Run the FFmpeg command
         command = f"""
