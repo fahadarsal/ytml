@@ -2,11 +2,6 @@ from dataclasses import dataclass
 from dataclasses import replace
 import json
 import re
-# from typing import TYPE_CHECKING
-# if TYPE_CHECKING:
-#     from dataclasses import dataclass
-# else:
-#     from pydantic.dataclasses import dataclass
 
 
 @dataclass
@@ -45,18 +40,7 @@ class Config:
     EXPERIMENTAL_DYNAMIC_SPEED: bool = False  # Dynamic animation speed adjustment
     EXPERIMENTAL_VOICE_CLONING: bool = False  # Voice cloning for custom narrations
 
-    HTML_ASSETS = {
-        "css": [
-            "css/merge_conflict_styles.css",
-        ],
-        "js": [
-            "js/mermaid_init.js",
-            "js/prism.js",
-        ],
-        "animations": [
-            "js/typewriter_effect.js",
-        ]
-    }
+    HTML_ASSETS={}
 
 
 def get_config_from_file(file_path: str, default_config=Config()):
@@ -107,12 +91,7 @@ def get_config_from_file(file_path: str, default_config=Config()):
                     value = float(value)
                 updates[key] = value
 
-    # Update the default config with parsed values
-    print(updates)
     # ✅ Apply updates manually instead of using `replace()`
     for key, value in updates.items():
         setattr(default_config, key, value)
-    # updated_config = replace(default_config, **updates)
-    # return updated_config
-    # return default_config.__class__(**{**default_config.__dict__, **updates})
     return default_config

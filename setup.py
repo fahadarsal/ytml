@@ -1,34 +1,47 @@
+import sys
+from setuptools.command.install import install
+import subprocess
 from setuptools import setup, find_packages
+class PostInstallCommand(install):
+    """Post-installation for Playwright browser"""
+    def run(self):
+        install.run(self)
+        subprocess.run(["python", "-m", "ytml.post_install"], check=False)
+
+# Conditionally add `audioop-lts` only for Python >3.10
+install_requires = [
+    "fastapi",
+    "uvicorn",
+    "websockets",
+    "boto3",
+    "gtts",
+    "pydub",
+    "moviepy",
+    "imageio",
+    "imageio-ffmpeg",
+    "playwright",
+    "numpy",
+    "requests",
+    "python-dotenv",
+    "beautifulsoup4",
+    "lxml",
+    "tqdm",
+    "pyttsx3",
+    "starlette",
+    "colorama",
+    "audioop-lts",
+]
 
 setup(
-    name="ytml",
-    version="0.1.0",
-    packages=find_packages(),
+    name="ytml-toolkit",
+    version="0.1.6",
+    packages=find_packages(include=["ytml", "ytml.*"]),
     entry_points={
         "console_scripts": [
-            "ytml=ytml.cli:main",  # This makes `ytml` a command
+            "ytml=ytml.cli:main",  # ✅ CLI command
         ],
     },
-    install_requires=[
-        "fastapi",
-        "uvicorn",
-        "websockets",
-        "boto3",
-        "gtts",
-        "pydub",  # Used for audio processing
-        "moviepy",  # Used for video processing
-        "imageio",  # Required for image/video handling
-        "imageio-ffmpeg",  # Supports video encoding/decoding
-        "playwright",  # Needed for rendering animations
-        "numpy",  # If used in image/video processing
-        "requests",  # Required for API requests (e.g., ElevenLabs)
-        "python-dotenv",  # If you're using `.env` files for config
-        "beautifulsoup4",  # If used for HTML parsing
-        "lxml",  # If parsing XML or HTML
-        "tqdm",  # If you're showing progress bars
-        "pyttsx3",  # If using local TTS
-        "starlette",  # Dependency of FastAPI,
-        "colorama"
-    ],
+    install_requires=install_requires,  # ✅ Dynamic dependencies
     python_requires=">=3.7",
+    cmdclass={"install": PostInstallCommand},  # ✅ Run post-install script
 )
