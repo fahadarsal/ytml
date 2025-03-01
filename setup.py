@@ -29,7 +29,7 @@ install_requires = [
     "pyttsx3",
     "starlette",
     "colorama",
-    "audioop-lts",
+    "audioop-lts;python_version>'3.11'",
 ]
 
 setup(
