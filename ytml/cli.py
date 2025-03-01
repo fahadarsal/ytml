@@ -10,7 +10,7 @@ from ytml.utils.config import get_config_from_file
 from tqdm import tqdm  
 from colorama import Fore, Style 
 
-VERSION = "0.1.6" 
+VERSION = "0.2.0" 
 
 def check_elevenlabs_key():
     """Check if ELEVEN_LABS_API_KEY is set, warn if missing."""

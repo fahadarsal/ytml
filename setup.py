@@ -34,7 +34,7 @@ install_requires = [
 
 setup(
     name="ytml-toolkit",
-    version="0.1.6",
+    version="0.2.0",
     packages=find_packages(include=["ytml", "ytml.*"]),
     entry_points={
         "console_scripts": [
