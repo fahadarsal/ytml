@@ -26,10 +26,17 @@ class YTMLParser:
 
     def _preprocess_file(self, file_path):
         """
-        Preprocess the YTML file to wrap content inside <code> tags in <![CDATA[ ... ]]>
+        Preprocess the YTML file:
+        1. Strip HTML/XML comments — they can contain chars invalid in strict XML
+           (bare <, &, or -- sequences) which break ET.fromstring().
+        2. Wrap <frame> content in CDATA so inner HTML is not parsed as XML.
         """
         with open(file_path, "r") as file:
             content = file.read()
+
+        # Strip <!-- ... --> comments before XML parsing.
+        # YTML comments are author notes only; they have no effect on video output.
+        content = re.sub(r'<!--.*?-->', '', content, flags=re.DOTALL)
 
         # Wrap <frame> content in <![CDATA[ ... ]]>
         content = re.sub(

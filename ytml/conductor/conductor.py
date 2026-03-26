@@ -3,11 +3,14 @@ import json
 import sys
 import time
 import argparse
-from colorama import Fore, Style
+try:
+    from colorama import Fore, Style
+except ImportError:
+    class _NoColor:
+        def __getattr__(self, _): return ""
+    Fore = Style = _NoColor()
 from ytml.interpretron.parser import YTMLParser
-from ytml.vocalforge.gtts_vocal_forge import gTTSVocalForge
 from ytml.vocalforge.base_vocal_forge import VocalForgeBase
-from ytml.vocalforge.xi_labs_vocal_forge import ElevenLabsVocalForge
 from ytml.animagic.renderer import Animagic, HtmlPreprocessor
 from ytml.timesync.synchronizer import TimeSyncAlchemist
 from ytml.conductor.vid_composer import VidComposer

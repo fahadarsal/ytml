@@ -3,3 +3,8 @@ venv/
 ytml_toolkit.egg-info/
 dist/
 .pypirc
+venv1/
+newenv/
+ytml/*/__pycache__/
+ytml/__pycache__/
+ytml/tmp/

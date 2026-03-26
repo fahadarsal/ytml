@@ -23,15 +23,28 @@ class Animagic:
     def _setup_page(self, browser, html_content):
         """
         A shared method to initialize the browser page with given HTML content.
+        Uses networkidle so CDN scripts (Mermaid, Prism) are downloaded and
+        executed before any screenshot is taken.
         """
         page = browser.new_page()
         page.set_viewport_size(
             {"width": self.config.VIDEO_WIDTH, "height": self.config.VIDEO_HEIGHT}
         )
-        page.set_content(html_content)
+        # networkidle ensures CDN fetches complete before we proceed
+        page.set_content(html_content, wait_until="networkidle")
+
         if "<mermaid" in html_content:
+            # Wait for Mermaid to finish rendering SVGs
             page.wait_for_function(
-                "window.mermaid && window.mermaid.init", timeout=5000)
+                "document.querySelectorAll('.mermaid svg').length > 0",
+                timeout=10000,
+            )
+
+        if "<code" in html_content:
+            # Wait for Prism to finish tokenizing
+            page.wait_for_function("window.Prism !== undefined", timeout=10000)
+            page.wait_for_timeout(200)  # let autoloader inject language tokens
+
         return page
 
     def render_frame(self, html_content, output_file):
