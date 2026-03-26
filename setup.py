@@ -6,6 +6,7 @@ from setuptools.command.install import install
 
 class PostInstallCommand(install):
     """Install Playwright browser after package install."""
+
     def run(self):
         install.run(self)
         subprocess.run(["python", "-m", "ytml.post_install"], check=False)
@@ -39,7 +40,7 @@ with open("README.md", "r", encoding="utf-8") as fh:
 
 setup(
     name="ytml-toolkit",
-    version="0.2.10",
+    version="0.2.13",
     author="Fahad Arsal",
     author_email="",
     description="Turn .ytml scripts into production-ready videos — code-driven video automation.",

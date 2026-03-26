@@ -2,13 +2,18 @@ import argparse
 import logging
 import os
 import sys
-from ytml.utils.logger import logger
-from ytml.vocalforge.xi_labs_vocal_forge import ElevenLabsVocalForge
-from ytml.vocalforge.gtts_vocal_forge import gTTSVocalForge
-from ytml.conductor.conductor import Conductor
-from ytml.utils.config import Config, get_config_from_file
-from tqdm import tqdm
-from colorama import Fore, Style
+
+# Ensure the local source package takes priority over any installed ytml-toolkit
+# version in site-packages. This matters when running cli.py directly from the
+# repo rather than from a freshly installed wheel.
+sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+
+try:
+    from colorama import Fore, Style
+except ImportError:
+    class _NoColor:
+        def __getattr__(self, _): return ""
+    Fore = Style = _NoColor()
 
 VERSION = "0.2.10"
 
@@ -63,7 +68,6 @@ HELLO_WORLD_TEMPLATE = """\
 
 
 def check_elevenlabs_key():
-    """Check if ELEVEN_LABS_API_KEY is set, warn if missing."""
     if not os.getenv("ELEVEN_LABS_API_KEY"):
         print(Fore.YELLOW + "[WARNING] ELEVEN_LABS_API_KEY is not set. "
               "Use --use-gtts or set the key for AI voiceovers." + Style.RESET_ALL)
@@ -77,15 +81,13 @@ def cmd_init(name):
     os.makedirs(project_dir, exist_ok=True)
     os.makedirs(os.path.join(project_dir, "assets"), exist_ok=True)
 
-    ytml_path = os.path.join(project_dir, "video.ytml")
-    with open(ytml_path, "w") as f:
+    with open(os.path.join(project_dir, "video.ytml"), "w") as f:
         f.write(HELLO_WORLD_TEMPLATE)
-
-    env_path = os.path.join(project_dir, ".env")
-    with open(env_path, "w") as f:
+    with open(os.path.join(project_dir, ".env"), "w") as f:
         f.write("ELEVEN_LABS_API_KEY=your-api-key-here\n")
 
-    print(Fore.GREEN + f"\n✅ Project created at ./{project_dir}/" + Style.RESET_ALL)
+    print(Fore.GREEN +
+          f"\n✅ Project created at ./{project_dir}/" + Style.RESET_ALL)
     print(f"   📄 video.ytml      — your YTML script")
     print(f"   📁 assets/         — put your images, audio and fonts here")
     print(f"   🔑 .env            — add your Eleven Labs key here\n")
@@ -100,84 +102,115 @@ def main():
         formatter_class=argparse.RawDescriptionHelpFormatter,
         epilog="""
 examples:
-  ytml init my-video            scaffold a new project
+  ytml init my-video                           scaffold a new project
   ytml -i video.ytml -o out.mp4 --use-gtts    generate video (free TTS)
   ytml -i video.ytml -o out.mp4               generate video (Eleven Labs AI)
-  ytml -i video.ytml --preview  preview HTML structure
-  ytml --resume <uuid>          resume a stopped job
+  ytml -i video.ytml --preview                preview HTML structure
+  ytml --resume <uuid>                         resume a stopped job
         """
     )
     parser.add_argument("command", nargs="?", help="Subcommand: init")
     parser.add_argument("init_name", nargs="?", help="Project name for `init`")
     parser.add_argument("-i", "--input", help="Path to the YTML input file.")
-    parser.add_argument("-o", "--output", default="output_video.mp4", help="Output video file.")
-    parser.add_argument("--use-gtts", action="store_true", help="Use gTTS instead of Eleven Labs (free, no API key needed).")
-    parser.add_argument("--skip", nargs="*", choices=["parse", "voiceover", "render", "sync", "compose"], help="Steps to skip.")
-    parser.add_argument("--resume", help="Resume a job using the provided UUID.")
-    parser.add_argument("--job", help="Job ID of voiceovers to reuse. Requires --skip voiceover.")
-    parser.add_argument("--preview", action="store_true", help="Preview HTML only (no video generated).")
-    parser.add_argument("--version", action="store_true", help="Show CLI version.")
-    parser.add_argument("--verbose", action="store_true", help="Enable detailed logging.")
+    parser.add_argument(
+        "-o", "--output", default="output_video.mp4", help="Output video file.")
+    parser.add_argument("--use-gtts", action="store_true",
+                        help="Use gTTS instead of Eleven Labs (free, no API key needed).")
+    parser.add_argument("--skip", nargs="*", choices=[
+                        "parse", "voiceover", "render", "sync", "compose"], help="Steps to skip.")
+    parser.add_argument(
+        "--resume", help="Resume a job using the provided UUID.")
+    parser.add_argument(
+        "--job", help="Job ID of voiceovers to reuse. Requires --skip voiceover.")
+    parser.add_argument("--preview", action="store_true",
+                        help="Preview HTML only (no video generated).")
+    parser.add_argument("--version", action="store_true",
+                        help="Show CLI version.")
+    parser.add_argument("--verbose", action="store_true",
+                        help="Enable detailed logging.")
 
     args = parser.parse_args()
+
+    # ── Commands that need zero heavy dependencies ─────────────────────────────
+
+    if args.version:
+        print(Fore.CYAN + f"YTML CLI v{VERSION}" + Style.RESET_ALL)
+        sys.exit(0)
+
+    if args.command == "init":
+        cmd_init(args.init_name)
+        return
+
+    # ── Require an input file for everything below ─────────────────────────────
+    if args.resume is None and not args.input:
+        print(
+            Fore.RED + "[ERROR] No input file provided. Use -i <file.ytml>" + Style.RESET_ALL)
+        print(Fore.YELLOW + "Tip: run `ytml init my-video` to scaffold a starter project." + Style.RESET_ALL)
+        parser.print_help()
+        return
+
+    if args.input and not os.path.exists(args.input):
+        print(
+            Fore.RED + f"[ERROR] Input file '{args.input}' not found." + Style.RESET_ALL)
+        return
+
+    # ── Preview — only needs the parser + preprocessor (no heavy deps) ─────────
+    if args.preview:
+        from ytml.utils.config import get_config_from_file
+        from ytml.interpretron.parser import YTMLParser
+        from ytml.animagic.html_preprocesor import HtmlPreprocessor
+
+        config = get_config_from_file(args.input)
+        parsed = YTMLParser(args.input).parse()
+        html = HtmlPreprocessor(config).preview(parsed)
+        with open("preview.html", "w") as f:
+            f.write(html)
+        print(Fore.GREEN + "✅ Preview written to preview.html now" + Style.RESET_ALL)
+        return
+
+    # ── Full pipeline — needs all dependencies ─────────────────────────────────
+    from ytml.utils.logger import logger
+    from ytml.utils.config import Config, get_config_from_file
+    from ytml.conductor.conductor import Conductor
 
     if args.verbose:
         logger.setLevel(logging.DEBUG)
     else:
         logger.setLevel(logging.WARNING)
 
-    # Version flag
-    if args.version:
-        print(Fore.CYAN + f"YTML CLI v{VERSION}" + Style.RESET_ALL)
-        sys.exit(0)
-
-    # `ytml init [name]` subcommand
-    if args.command == "init":
-        cmd_init(args.init_name)
-        return
-
     # Resume a stopped job
     if args.resume:
         job_dir = f"tmp/{args.resume}"
         if not os.path.exists(job_dir):
-            print(Fore.RED + f"[ERROR] No job found with UUID {args.resume}." + Style.RESET_ALL)
+            print(
+                Fore.RED + f"[ERROR] No job found with UUID {args.resume}." + Style.RESET_ALL)
             return
-        print(Fore.BLUE + f"[INFO] Resuming job {args.resume}..." + Style.RESET_ALL)
-        conductor = Conductor(None, args.output, config=Config(), job_id=args.resume)
+        print(Fore.BLUE +
+              f"[INFO] Resuming job {args.resume}..." + Style.RESET_ALL)
+        conductor = Conductor(
+            None, args.output, config=Config(), job_id=args.resume)
         status = conductor.get_job_status()
-        skip_steps = [stage for stage in ["parse", "voiceover", "render", "sync"] if status.get(f"{stage}.json")]
+        skip_steps = [stage for stage in ["parse", "voiceover",
+                                          "render", "sync"] if status.get(f"{stage}.json")]
         conductor.run_workflow(f"{job_dir}/parsed.json", skip_steps)
-        return
-
-    # Require --input for all other commands
-    if not args.input:
-        print(Fore.RED + "[ERROR] No input file provided. Use -i <file.ytml>" + Style.RESET_ALL)
-        print(Fore.YELLOW + "Tip: run `ytml init my-video` to scaffold a starter project." + Style.RESET_ALL)
-        parser.print_help()
-        return
-
-    if not os.path.exists(args.input):
-        print(Fore.RED + f"[ERROR] Input file '{args.input}' not found." + Style.RESET_ALL)
         return
 
     config = get_config_from_file(args.input)
 
-    # Preview-only mode
-    if args.preview:
-        conductor = Conductor(None, args.output, config)
-        conductor.previewHTML(args.input)
-        print(Fore.GREEN + "✅ Preview written to preview.html" + Style.RESET_ALL)
-        return
+    from ytml.vocalforge.gtts_vocal_forge import gTTSVocalForge
+    from ytml.vocalforge.xi_labs_vocal_forge import ElevenLabsVocalForge
 
-    # Check API key when not using gTTS
     if not args.use_gtts and config.ENABLE_AI_VOICE:
         if not check_elevenlabs_key():
-            print(Fore.YELLOW + "Falling back to gTTS. Use --use-gtts to suppress this message." + Style.RESET_ALL)
+            print(
+                Fore.YELLOW + "Falling back to gTTS. Use --use-gtts to suppress this message." + Style.RESET_ALL)
             args.use_gtts = True
 
-    vocal_forge = gTTSVocalForge() if args.use_gtts or not config.ENABLE_AI_VOICE else ElevenLabsVocalForge(config.AI_VOICE_ID)
+    vocal_forge = gTTSVocalForge(
+    ) if args.use_gtts or not config.ENABLE_AI_VOICE else ElevenLabsVocalForge(config.AI_VOICE_ID)
     conductor = Conductor(vocal_forge, args.output, config=config)
-    conductor.run_workflow(args.input, skip_steps=args.skip or [], job=args.job)
+    conductor.run_workflow(
+        args.input, skip_steps=args.skip or [], job=args.job)
 
 
 if __name__ == "__main__":
