@@ -1,0 +1,159 @@
+<!--
+  data-explainer.ytml
+  ────────────────────
+  Demonstrates: animated stats, progress bars, and a step-by-step diagram.
+  Great starting point for data-heavy content (charts, architecture explainers, etc.)
+  Run it with:
+    ytml -i data-explainer.ytml -o data-explainer.mp4 --use-gtts
+-->
+<ytml>
+  <config>
+    FRAME_RATE=30
+    VIDEO_WIDTH=1920
+    VIDEO_HEIGHT=1088
+    ENABLE_AI_VOICE=False
+  </config>
+
+  <!-- ── Slide 1 : Hook ─────────────────────────────────────────────── -->
+  <segment>
+    <frame duration="5s">
+      <div style="
+        height: 100vh;
+        background: #0a0a0a;
+        display: flex; align-items: center; justify-content: center;
+        font-family: 'Segoe UI', sans-serif;
+      ">
+        <div style="text-align: center; color: #fff; padding: 40px;">
+          <p style="font-size: 1.4em; color: #888; text-transform: uppercase; letter-spacing: 4px;">
+            Did you know?
+          </p>
+          <h1 style="font-size: 5em; margin: 10px 0; color: #e2a428; animation: countUp 2s ease-out forwards;">
+            90%
+          </h1>
+          <p style="font-size: 1.6em; color: #ccc; max-width: 700px; margin: 0 auto;">
+            of the world's data was created in the last two years
+          </p>
+        </div>
+      </div>
+      <style>
+        @keyframes countUp {
+          from { opacity: 0; transform: scale(0.5); }
+          to   { opacity: 1; transform: scale(1); }
+        }
+      </style>
+    </frame>
+    <voice start="0.5s" end="5s">
+      Did you know that ninety percent of all the data in the world was created in just the last two years?
+      The explosion of data is reshaping every industry.
+    </voice>
+  </segment>
+
+  <transition type="fade" duration="0.4s" />
+
+  <!-- ── Slide 2 : Animated stats bar ──────────────────────────────── -->
+  <segment>
+    <frame duration="6s">
+      <div style="
+        height: 100vh; background: #111;
+        display: flex; align-items: center; justify-content: center;
+        font-family: 'Segoe UI', sans-serif; padding: 60px;
+      ">
+        <div style="width: 100%; max-width: 960px; color: #fff;">
+          <h2 style="font-size: 2.2em; color: #e2a428; margin-bottom: 36px;">
+            Where does the data come from?
+          </h2>
+          <div style="margin-bottom: 28px;">
+            <div style="display:flex; justify-content:space-between; margin-bottom:8px;">
+              <span style="font-size:1.2em;">Social Media</span><span style="color:#e2a428;">45%</span>
+            </div>
+            <div style="background:#333; border-radius:6px; height:18px;">
+              <div style="width:0%; height:100%; background:#e2a428; border-radius:6px; animation:grow45 1.5s 0.3s forwards;"></div>
+            </div>
+          </div>
+          <div style="margin-bottom: 28px;">
+            <div style="display:flex; justify-content:space-between; margin-bottom:8px;">
+              <span style="font-size:1.2em;">IoT Devices</span><span style="color:#89b4fa;">30%</span>
+            </div>
+            <div style="background:#333; border-radius:6px; height:18px;">
+              <div style="width:0%; height:100%; background:#89b4fa; border-radius:6px; animation:grow30 1.5s 0.5s forwards;"></div>
+            </div>
+          </div>
+          <div>
+            <div style="display:flex; justify-content:space-between; margin-bottom:8px;">
+              <span style="font-size:1.2em;">Enterprise</span><span style="color:#a6e3a1;">25%</span>
+            </div>
+            <div style="background:#333; border-radius:6px; height:18px;">
+              <div style="width:0%; height:100%; background:#a6e3a1; border-radius:6px; animation:grow25 1.5s 0.7s forwards;"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <style>
+        @keyframes grow45 { to { width: 45%; } }
+        @keyframes grow30 { to { width: 30%; } }
+        @keyframes grow25 { to { width: 25%; } }
+      </style>
+    </frame>
+    <voice start="0.5s" end="6s">
+      The biggest contributors are social media at forty five percent,
+      IoT devices at thirty percent, and enterprise systems at twenty five percent.
+    </voice>
+  </segment>
+
+  <transition type="fade" duration="0.4s" />
+
+  <!-- ── Slide 3 : Pipeline diagram ────────────────────────────────── -->
+  <segment>
+    <frame duration="7s" static="true">
+      <div style="
+        height: 100vh; background: #0f0f23;
+        display: flex; flex-direction: column;
+        align-items: center; justify-content: center;
+        font-family: 'Segoe UI', sans-serif; padding: 40px;
+      ">
+        <h2 style="color: #89b4fa; font-size: 2em; margin-bottom: 30px;">
+          A modern data pipeline
+        </h2>
+        <mermaid>
+          graph LR
+            A[📱 Sources] --> B[Ingestion]
+            B --> C[Stream Processing]
+            C --> D[(Data Lake)]
+            D --> E[Analytics / ML]
+            E --> F[📊 Dashboard]
+            style A fill:#e2a428,color:#000
+            style F fill:#a6e3a1,color:#000
+        </mermaid>
+      </div>
+    </frame>
+    <voice start="0.5s" end="7s">
+      Modern data pipelines start with ingestion from diverse sources,
+      then stream it through processing layers into a data lake,
+      where analytics and machine learning models extract insight for dashboards and decisions.
+    </voice>
+  </segment>
+
+  <transition type="fade" duration="0.4s" />
+
+  <!-- ── Slide 4 : Takeaway ─────────────────────────────────────────── -->
+  <segment>
+    <frame duration="5s">
+      <div style="
+        height: 100vh;
+        background: linear-gradient(135deg, #e2a428, #c0392b);
+        display: flex; align-items: center; justify-content: center;
+        font-family: 'Segoe UI', sans-serif;
+      ">
+        <div style="text-align: center; color: #fff; padding: 40px;">
+          <h2 style="font-size: 3em; margin: 0;">Data is the new infrastructure.</h2>
+          <p style="font-size: 1.5em; margin-top: 20px; opacity: 0.9;">
+            Build pipelines that scale — start small, design for growth.
+          </p>
+        </div>
+      </div>
+    </frame>
+    <voice start="0.5s" end="5s">
+      Data is infrastructure. Build your pipelines to be reliable, observable, and ready to scale.
+    </voice>
+  </segment>
+</ytml>

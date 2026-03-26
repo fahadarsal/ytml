@@ -145,10 +145,9 @@ LOG_LEVEL=INFO             DEBUG | INFO | WARNING | ERROR
 
 | File | Description |
 |---|---|
-| [`hello-world.ytml`](../YTML-Automation/samples/hello-world.ytml) | Minimal 3-slide intro video |
-| [`code-tutorial.ytml`](../YTML-Automation/samples/code-tutorial.ytml) | Tech tutorial with code blocks and Mermaid diagram |
-| [`data-explainer.ytml`](../YTML-Automation/samples/data-explainer.ytml) | Animated stats and pipeline diagram |
-| [`example.ytml`](../YTML-Automation/samples/example.ytml) | Original channel branding demo |
+| [`hello-world.ytml`](samples/hello-world.ytml) | Minimal 3-slide intro video |
+| [`code-tutorial.ytml`](samples/code-tutorial.ytml) | Tech tutorial with code blocks and Mermaid diagram |
+| [`data-explainer.ytml`](samples/data-explainer.ytml) | Animated stats and pipeline diagram |
 
 ---
 

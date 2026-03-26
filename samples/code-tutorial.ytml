@@ -1,0 +1,176 @@
+<!--
+  code-tutorial.ytml
+  ───────────────────
+  Demonstrates: code blocks with syntax highlighting, mermaid diagrams, and voice narration.
+  Run it with:
+    ytml -i code-tutorial.ytml -o code-tutorial.mp4 --use-gtts
+-->
+<ytml>
+  <config>
+    FRAME_RATE=30
+    VIDEO_WIDTH=1920
+    VIDEO_HEIGHT=1088
+    ENABLE_AI_VOICE=False
+  </config>
+
+  <!-- ── Slide 1 : Title card ───────────────────────────────────────── -->
+  <segment>
+    <frame duration="4s">
+      <div style="
+        display: flex; justify-content: center; align-items: center;
+        height: 100vh;
+        background: #1e1e2e;
+        font-family: 'Segoe UI', sans-serif;
+      ">
+        <div style="text-align: center; color: #cdd6f4;">
+          <h1 style="font-size: 3.5em; margin: 0; animation: fadeIn 1.2s ease-out;">
+            Understanding <span style="color: #89b4fa;">Async / Await</span>
+          </h1>
+          <p style="font-size: 1.4em; margin-top: 14px; color: #a6adc8;">
+            A quick explainer — generated with YTML
+          </p>
+        </div>
+      </div>
+      <style>
+        @keyframes fadeIn {
+          from { opacity: 0; transform: scale(0.95); }
+          to   { opacity: 1; transform: scale(1); }
+        }
+      </style>
+    </frame>
+    <voice start="0.5s" end="4s">
+      In this video, we'll demystify async and await in JavaScript in under two minutes.
+    </voice>
+  </segment>
+
+  <transition type="fade" duration="0.4s" />
+
+  <!-- ── Slide 2 : The problem ──────────────────────────────────────── -->
+  <segment>
+    <frame duration="7s" static="true">
+      <div style="
+        height: 100vh; background: #1e1e2e;
+        display: flex; align-items: center; justify-content: center;
+        font-family: 'Segoe UI', sans-serif; padding: 60px;
+      ">
+        <div style="max-width: 1100px; width: 100%;">
+          <h2 style="color: #89b4fa; font-size: 2em; margin-bottom: 20px;">
+            The problem: callback hell
+          </h2>
+          <code>
+            <pre class="language-javascript">
+fetchUser(id, function(user) {
+  fetchOrders(user.id, function(orders) {
+    fetchDetails(orders[0], function(detail) {
+      // deeply nested — hard to read and maintain
+      render(detail);
+    });
+  });
+});
+            </pre>
+          </code>
+        </div>
+      </div>
+    </frame>
+    <voice start="0.5s" end="7s">
+      Before async and await, JavaScript code that depended on multiple async operations
+      ended up deeply nested — commonly called callback hell.
+      It was hard to read and even harder to maintain.
+    </voice>
+  </segment>
+
+  <transition type="fade" duration="0.4s" />
+
+  <!-- ── Slide 3 : The solution ─────────────────────────────────────── -->
+  <segment>
+    <frame duration="7s" static="true">
+      <div style="
+        height: 100vh; background: #1e1e2e;
+        display: flex; align-items: center; justify-content: center;
+        font-family: 'Segoe UI', sans-serif; padding: 60px;
+      ">
+        <div style="max-width: 1100px; width: 100%;">
+          <h2 style="color: #a6e3a1; font-size: 2em; margin-bottom: 20px;">
+            The solution: async / await
+          </h2>
+          <code>
+            <pre class="language-javascript">
+async function loadPage(id) {
+  const user    = await fetchUser(id);
+  const orders  = await fetchOrders(user.id);
+  const detail  = await fetchDetails(orders[0]);
+  render(detail);
+}
+            </pre>
+          </code>
+          <p style="color: #a6adc8; font-size: 1.2em; margin-top: 24px;">
+            Same logic — reads like synchronous code.
+          </p>
+        </div>
+      </div>
+    </frame>
+    <voice start="0.5s" end="7s">
+      Async and await let you write asynchronous code that reads just like synchronous code.
+      Each await pauses execution until the promise resolves, then continues on the next line.
+    </voice>
+  </segment>
+
+  <transition type="fade" duration="0.4s" />
+
+  <!-- ── Slide 4 : Flow diagram ─────────────────────────────────────── -->
+  <segment>
+    <frame duration="6s" static="true">
+      <div style="
+        height: 100vh; background: #1e1e2e;
+        display: flex; flex-direction: column;
+        align-items: center; justify-content: center;
+        font-family: 'Segoe UI', sans-serif; padding: 40px;
+      ">
+        <h2 style="color: #89b4fa; font-size: 2em; margin-bottom: 30px;">Execution flow</h2>
+        <mermaid>
+          sequenceDiagram
+            participant JS as JS Thread
+            participant API as API / DB
+            JS->>API: fetchUser(id)
+            API-->>JS: user
+            JS->>API: fetchOrders(user.id)
+            API-->>JS: orders
+            JS->>API: fetchDetails(orders[0])
+            API-->>JS: detail
+            JS->>JS: render(detail)
+        </mermaid>
+      </div>
+    </frame>
+    <voice start="0.5s" end="6s">
+      Each await suspends the async function and hands control back to the event loop.
+      When the awaited promise settles, execution resumes exactly where it left off.
+    </voice>
+  </segment>
+
+  <transition type="fade" duration="0.4s" />
+
+  <!-- ── Slide 5 : Key takeaways ────────────────────────────────────── -->
+  <segment>
+    <frame duration="5s">
+      <div style="
+        height: 100vh;
+        background: linear-gradient(135deg, #1e1e2e, #313244);
+        display: flex; align-items: center; justify-content: center;
+        font-family: 'Segoe UI', sans-serif; padding: 60px;
+      ">
+        <div style="max-width: 860px; color: #cdd6f4;">
+          <h2 style="color: #f38ba8; font-size: 2.2em; margin-bottom: 24px;">Key takeaways</h2>
+          <ul style="font-size: 1.3em; line-height: 2.2; list-style: none; padding: 0;">
+            <li>🔵 &nbsp;<code>async</code> marks a function as asynchronous</li>
+            <li>🟢 &nbsp;<code>await</code> pauses until a Promise resolves</li>
+            <li>🔴 &nbsp;Wrap in <code>try / catch</code> for error handling</li>
+          </ul>
+        </div>
+      </div>
+    </frame>
+    <voice start="0.5s" end="5s">
+      To recap: mark functions with async, use await to pause on promises,
+      and wrap in try-catch to handle errors gracefully.
+    </voice>
+  </segment>
+</ytml>
