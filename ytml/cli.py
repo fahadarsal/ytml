@@ -10,7 +10,7 @@ from ytml.utils.config import Config, get_config_from_file
 from tqdm import tqdm
 from colorama import Fore, Style
 
-VERSION = "0.2.1"
+VERSION = "0.2.10"
 
 HELLO_WORLD_TEMPLATE = """\
 <ytml>

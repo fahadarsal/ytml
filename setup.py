@@ -39,7 +39,7 @@ with open("README.md", "r", encoding="utf-8") as fh:
 
 setup(
     name="ytml-toolkit",
-    version="0.2.1",
+    version="0.2.10",
     author="Fahad Arsal",
     author_email="",
     description="Turn .ytml scripts into production-ready videos — code-driven video automation.",
