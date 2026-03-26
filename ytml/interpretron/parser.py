@@ -63,11 +63,11 @@ class YTMLParser:
             ET.tostring(style_tags, encoding="unicode").strip(
             ) if style_tags is not None else None
         )
-        # Parse composites
+        # Parse composites — support both <composite> and <segment> (alias)
         composites = []
-        for composite in root.findall("composite"):
-            # Check conditional logic
-            composites.append(self._parse_composite(composite))
+        for composite in root:
+            if composite.tag in ("composite", "segment"):
+                composites.append(self._parse_composite(composite))
 
         # Extract global-music tag
         global_music_tag = root.find("global-music")
@@ -152,6 +152,12 @@ class YTMLParser:
                 "end": end,
                 "loop": music.get("loop") == "true",
             })
+
+        # Parse pauses
+        parsed_composite["pauses"] = []
+        for pause in composite.findall("pause"):
+            duration = parse_duration(pause.get("duration") or "1s")
+            parsed_composite["pauses"].append({"duration": duration})
 
         # Parse transitions
         for transition in composite.findall("transition"):
