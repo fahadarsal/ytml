@@ -27,7 +27,7 @@ class Config:
 
     # AI and Automation
     ENABLE_AI_VOICE: bool = True  # Whether to use AI-generated voiceovers
-    AI_VOICE_ID: str = "yDUXXKsu0jF5vdJnWAPU"  # Style for AI-generated voices
+    AI_VOICE_ID: str = "CwhRBWXzGAHq8TQ4Fs17"  # Style for AI-generated voices
     # Enable AI-generated visuals (e.g., imagine tag)
     ENABLE_AI_GENERATION: bool = False
     AI_IMAGE_STYLE: str = "3D"  # Style for AI-generated images or videos
@@ -40,7 +40,7 @@ class Config:
     EXPERIMENTAL_DYNAMIC_SPEED: bool = False  # Dynamic animation speed adjustment
     EXPERIMENTAL_VOICE_CLONING: bool = False  # Voice cloning for custom narrations
 
-    HTML_ASSETS={}
+    HTML_ASSETS = {}
 
 
 def get_config_from_file(file_path: str, default_config=Config()):

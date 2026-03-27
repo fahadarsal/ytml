@@ -59,17 +59,20 @@ class HtmlPreprocessor:
                 if include_css:
                     for css_file in self.config.HTML_ASSETS.get("css", []):
                         css_path = os.path.join(self.asset_dir, css_file)
-                        css_content = self._read_file_with_replacements(css_path, replacements)
+                        css_content = self._read_file_with_replacements(
+                            css_path, replacements)
                         css_tags.append(f"<style>{css_content}</style>")
                 if include_js:
                     for js_file in self.config.HTML_ASSETS.get("js", []):
                         js_path = os.path.join(self.asset_dir, js_file)
-                        js_content = self._read_file_with_replacements(js_path, replacements)
+                        js_content = self._read_file_with_replacements(
+                            js_path, replacements)
                         js_tags.append(js_content)
                 if include_animations:
                     for js_file in self.config.HTML_ASSETS.get("animations", []):
                         js_path = os.path.join(self.asset_dir, js_file)
-                        js_content = self._read_file_with_replacements(js_path, replacements)
+                        js_content = self._read_file_with_replacements(
+                            js_path, replacements)
                         js_tags.append(js_content)
 
             cdn = self._cdn_tags(html_content)
@@ -86,7 +89,8 @@ class HtmlPreprocessor:
     def preprocess(self, html_content, styles=None, include_css=True, include_js=True, include_animations=False):
         """Preprocess HTML content."""
         try:
-            head_tag = self._get_head_tag(html_content, styles, include_css, include_js, include_animations)
+            head_tag = self._get_head_tag(
+                html_content, styles, include_css, include_js, include_animations)
 
             if "<mermaid>" in html_content:
                 html_content = html_content.replace(
@@ -94,11 +98,12 @@ class HtmlPreprocessor:
 
             html_template = f"""<html>
 {head_tag}
-<body>
-    <div style="width:90%; height:90%; font-size:24px;">{html_content}</div>
+<body style="margin:0;padding:0;">
+    <div style="width:100%; height:100%;">{html_content}</div>
 </body>
 </html>"""
-            html_template = html_template.replace("../", "http://localhost:8000/")
+            html_template = html_template.replace(
+                "../", "http://localhost:8000/")
             return html_template
         except Exception as e:
             raise RuntimeError(f"Failed to preprocess HTML: {e}")
@@ -113,7 +118,8 @@ class HtmlPreprocessor:
 
         head_tag = self._get_head_tag(
             combined_content,
-            parsed_json.get("segments", [{}])[0].get("styles", "") if parsed_json.get("segments") else "",
+            parsed_json.get("segments", [{}])[0].get(
+                "styles", "") if parsed_json.get("segments") else "",
             include_animations=True,
         )
 
@@ -125,11 +131,12 @@ class HtmlPreprocessor:
                         "<mermaid>", "<div class='mermaid'>").replace("</mermaid>", "</div>")
                 html_body += html_content
 
-        html_body = re.sub(r'<object([^>]*)/>',r'<object\1></object>', html_body)
+        html_body = re.sub(r'<object([^>]*)/>',
+                           r'<object\1></object>', html_body)
 
         return f"""<html>
 {head_tag}
-<body>
-    <div style="width:90%; height:90%; font-size:24px;">{html_body}</div>
+<body style="margin:0;padding:0;">
+    <div style="width:100%; height:100%;">{html_body}</div>
 </body>
 </html>"""
