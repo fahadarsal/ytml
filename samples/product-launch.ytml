@@ -1,0 +1,146 @@
+<!--
+  product-launch.ytml
+  ────────────────────
+  Demonstrates: global background music, bold typography, countdown-style reveal,
+  and a CTA slide. Great starting point for announcements, releases, or event promos.
+
+  Audio: replace assets/background-music.mp3 with your own track.
+  Run with:
+    ytml -i product-launch.ytml -o product-launch.mp4 --use-gtts
+-->
+<ytml>
+  <config>
+    FRAME_RATE=30
+    VIDEO_WIDTH=1920
+    VIDEO_HEIGHT=1088
+    ENABLE_AI_VOICE=True
+  </config>
+
+  <!-- Loop a background track across the entire video -->
+  <global-music src="assets/background-music.mp3" start="0s" end="25s" loop="true" />
+
+  <!-- ── Slide 1 : Teaser ────────────────────────────────────────────── -->
+  <segment>
+    <frame duration="5s">
+      <div style="
+        height: 100vh;
+        background: #0d0d0d;
+        display: flex; align-items: center; justify-content: center;
+        font-family: 'Segoe UI', sans-serif;
+        overflow: hidden;
+      ">
+        <div style="text-align: center; color: #fff;">
+          <p style="
+            font-size: 1.2em; letter-spacing: 8px; text-transform: uppercase;
+            color: #888; animation: fadeUp 1s ease-out both;
+          ">Something big is coming</p>
+          <h1 style="
+            font-size: 7em; font-weight: 900; margin: 10px 0;
+            background: linear-gradient(90deg, #f5a623, #e8315a);
+            -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+            animation: fadeUp 1s 0.3s ease-out both;
+          ">2.0</h1>
+        </div>
+      </div>
+      <style>
+        @keyframes fadeUp {
+          from { opacity: 0; transform: translateY(30px); }
+          to   { opacity: 1; transform: translateY(0); }
+        }
+      </style>
+    </frame>
+    <voice start="0.5s" end="5s">Something big is coming. Version two point zero is almost here.</voice>
+  </segment>
+
+  <transition type="fade" duration="0.5s" />
+
+  <!-- ── Slide 2 : What's new ───────────────────────────────────────── -->
+  <segment>
+    <frame duration="7s">
+      <div style="
+        height: 100vh;
+        background: #111;
+        display: flex; align-items: center; justify-content: center;
+        font-family: 'Segoe UI', sans-serif; padding: 60px;
+      ">
+        <div style="max-width: 960px; width: 100%; color: #fff;">
+          <h2 style="font-size: 2.5em; color: #f5a623; margin-bottom: 40px; animation: fadeUp 0.8s ease-out both;">
+            What's new in 2.0
+          </h2>
+          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 28px;">
+            <div style="background: #1e1e1e; border-radius: 12px; padding: 28px; animation: fadeUp 0.8s 0.2s ease-out both;">
+              <div style="font-size: 2em; margin-bottom: 10px;">⚡</div>
+              <h3 style="color: #f5a623; margin: 0 0 8px;">3× Faster</h3>
+              <p style="color: #aaa; margin: 0; line-height: 1.6;">Completely rewritten core engine — renders in seconds.</p>
+            </div>
+            <div style="background: #1e1e1e; border-radius: 12px; padding: 28px; animation: fadeUp 0.8s 0.4s ease-out both;">
+              <div style="font-size: 2em; margin-bottom: 10px;">🎨</div>
+              <h3 style="color: #f5a623; margin: 0 0 8px;">New Themes</h3>
+              <p style="color: #aaa; margin: 0; line-height: 1.6;">12 built-in themes, fully customisable with CSS variables.</p>
+            </div>
+            <div style="background: #1e1e1e; border-radius: 12px; padding: 28px; animation: fadeUp 0.8s 0.6s ease-out both;">
+              <div style="font-size: 2em; margin-bottom: 10px;">🔊</div>
+              <h3 style="color: #f5a623; margin: 0 0 8px;">Audio Mixing</h3>
+              <p style="color: #aaa; margin: 0; line-height: 1.6;">Per-segment music, background loops, and AI voiceovers.</p>
+            </div>
+            <div style="background: #1e1e1e; border-radius: 12px; padding: 28px; animation: fadeUp 0.8s 0.8s ease-out both;">
+              <div style="font-size: 2em; margin-bottom: 10px;">📦</div>
+              <h3 style="color: #f5a623; margin: 0 0 8px;">One Command</h3>
+              <p style="color: #aaa; margin: 0; line-height: 1.6;"><code style="color:#f5a623;">ytml init</code> scaffolds a full project in seconds.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+      <style>
+        @keyframes fadeUp {
+          from { opacity: 0; transform: translateY(20px); }
+          to   { opacity: 1; transform: translateY(0); }
+        }
+      </style>
+    </frame>
+    <voice start="0.5s" end="7s">
+      Version two brings a three-times faster rendering engine, twelve new themes,
+      full audio mixing support, and a brand new project scaffolding command.
+    </voice>
+  </segment>
+
+  <transition type="fade" duration="0.5s" />
+
+  <!-- ── Slide 3 : Release date / CTA ──────────────────────────────── -->
+  <segment>
+    <frame duration="6s">
+      <div style="
+        height: 100vh;
+        background: linear-gradient(135deg, #1a0530, #3b0764);
+        display: flex; flex-direction: column;
+        align-items: center; justify-content: center;
+        font-family: 'Segoe UI', sans-serif;
+      ">
+        <p style="color: #c084fc; font-size: 1.3em; letter-spacing: 4px; text-transform: uppercase; animation: fadeIn 1s ease-out both;">
+          Available now
+        </p>
+        <h2 style="color: #fff; font-size: 3.5em; margin: 16px 0; animation: fadeIn 1s 0.3s ease-out both;">
+          Get started today
+        </h2>
+        <div style="
+          margin-top: 32px;
+          background: #7c3aed; color: #fff;
+          font-size: 1.4em; padding: 18px 48px;
+          border-radius: 50px; animation: fadeIn 1s 0.6s ease-out both;
+          font-weight: 600;
+        ">
+          pip install --upgrade ytml-toolkit
+        </div>
+      </div>
+      <style>
+        @keyframes fadeIn {
+          from { opacity: 0; transform: scale(0.95); }
+          to   { opacity: 1; transform: scale(1); }
+        }
+      </style>
+    </frame>
+    <voice start="0.5s" end="6s">
+      It's available right now. Run pip install upgrade ytml-toolkit and start building today.
+    </voice>
+  </segment>
+</ytml>

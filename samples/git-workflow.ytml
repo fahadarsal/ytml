@@ -1,0 +1,181 @@
+<!--
+  git-workflow.ytml
+  ──────────────────
+  Demonstrates: code blocks (Prism syntax highlighting), Mermaid git graph,
+  per-segment accent music, and a cheat-sheet slide.
+  Great starting point for developer tutorials and workflow explainers.
+
+  Audio: replace assets/lofi-beat.mp3 with your own track.
+  Run with:
+    ytml -i git-workflow.ytml -o git-workflow.mp4 --use-gtts
+-->
+<ytml>
+  <config>
+    FRAME_RATE=30
+    VIDEO_WIDTH=1920
+    VIDEO_HEIGHT=1088
+    ENABLE_AI_VOICE=False
+  </config>
+
+  <!-- ── Slide 1 : Title ────────────────────────────────────────────── -->
+  <segment>
+    <frame duration="5s">
+      <div style="
+        height: 100vh;
+        background: #0f111a;
+        display: flex; align-items: center; justify-content: center;
+        font-family: 'Segoe UI', sans-serif;
+      ">
+        <div style="text-align: center; color: #fff;">
+          <p style="color: #7ee787; font-size: 1.1em; letter-spacing: 5px; text-transform: uppercase; animation: fadeIn 0.8s ease-out both;">
+            Developer workflow
+          </p>
+          <h1 style="font-size: 4.5em; font-weight: 800; margin: 12px 0; animation: fadeIn 0.8s 0.3s ease-out both;">
+            Git Branching <span style="color: #58a6ff;">Explained</span>
+          </h1>
+          <p style="color: #8b949e; font-size: 1.3em; animation: fadeIn 0.8s 0.6s ease-out both;">
+            Feature branches, pull requests, and clean merges
+          </p>
+        </div>
+      </div>
+      <style>
+        @keyframes fadeIn {
+          from { opacity: 0; transform: translateY(20px); }
+          to   { opacity: 1; transform: translateY(0); }
+        }
+      </style>
+    </frame>
+    <!-- Soft intro music for the title card -->
+    <music src="assets/lofi-beat.mp3" start="0s" end="5s" loop="false" />
+    <voice start="0.8s" end="5s">
+      Let's walk through a clean Git branching workflow — from feature branches to pull requests and merges.
+    </voice>
+  </segment>
+
+  <transition type="fade" duration="0.4s" />
+
+  <!-- ── Slide 2 : The basic commands ──────────────────────────────── -->
+  <segment>
+    <frame duration="8s">
+      <div style="
+        height: 100vh; background: #0d1117;
+        display: flex; align-items: center; justify-content: center;
+        font-family: 'Segoe UI', sans-serif; padding: 60px;
+      ">
+        <div style="max-width: 1100px; width: 100%;">
+          <h2 style="color: #58a6ff; font-size: 2em; margin-bottom: 28px;">
+            Starting a feature branch
+          </h2>
+          <code>
+            <pre class="language-bash">
+# 1. Always branch from an up-to-date main
+git checkout main
+git pull origin main
+
+# 2. Create and switch to your feature branch
+git checkout -b feature/user-auth
+
+# 3. Work, commit often
+git add .
+git commit -m "feat: add JWT middleware"
+
+# 4. Push and open a PR
+git push origin feature/user-auth
+            </pre>
+          </code>
+        </div>
+      </div>
+    </frame>
+    <voice start="0.5s" end="8s">
+      Always start from an up-to-date main branch. Create a descriptive feature branch,
+      commit early and often with clear messages, then push and open a pull request.
+    </voice>
+  </segment>
+
+  <transition type="fade" duration="0.4s" />
+
+  <!-- ── Slide 3 : Branch graph ─────────────────────────────────────── -->
+  <segment>
+    <frame duration="8s" static="true">
+      <div style="
+        height: 100vh; background: #0d1117;
+        display: flex; flex-direction: column;
+        align-items: center; justify-content: center;
+        font-family: 'Segoe UI', sans-serif; padding: 40px;
+      ">
+        <h2 style="color: #58a6ff; font-size: 2em; margin-bottom: 30px;">
+          What the branch graph looks like
+        </h2>
+        <mermaid>
+          gitGraph
+            commit id: "initial commit"
+            branch feature/user-auth
+            checkout feature/user-auth
+            commit id: "add JWT middleware"
+            commit id: "add login endpoint"
+            checkout main
+            branch feature/dashboard
+            checkout feature/dashboard
+            commit id: "scaffold dashboard"
+            checkout main
+            merge feature/user-auth id: "merge auth ✅"
+            checkout feature/dashboard
+            commit id: "add charts"
+            checkout main
+            merge feature/dashboard id: "merge dashboard ✅"
+        </mermaid>
+      </div>
+    </frame>
+    <voice start="0.5s" end="8s">
+      Each feature lives in its own branch. Main stays stable. Features are merged
+      only after review — keeping the history linear and easy to follow.
+    </voice>
+  </segment>
+
+  <transition type="fade" duration="0.4s" />
+
+  <!-- ── Slide 4 : Cheat sheet ──────────────────────────────────────── -->
+  <segment>
+    <frame duration="7s">
+      <div style="
+        height: 100vh; background: #0d1117;
+        display: flex; align-items: center; justify-content: center;
+        font-family: 'Segoe UI', sans-serif; padding: 60px;
+      ">
+        <div style="max-width: 900px; color: #c9d1d9;">
+          <h2 style="color: #7ee787; font-size: 2.2em; margin-bottom: 32px;">Quick-reference cheat sheet</h2>
+          <table style="width:100%; border-collapse: collapse; font-size: 1.1em;">
+            <thead>
+              <tr style="border-bottom: 1px solid #30363d;">
+                <th style="text-align:left; padding: 10px 16px; color: #58a6ff;">Command</th>
+                <th style="text-align:left; padding: 10px 16px; color: #58a6ff;">What it does</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr style="border-bottom: 1px solid #21262d;">
+                <td style="padding: 12px 16px;"><code style="color:#e3b341;">git checkout -b name</code></td>
+                <td style="padding: 12px 16px; color:#8b949e;">Create + switch to a new branch</td>
+              </tr>
+              <tr style="border-bottom: 1px solid #21262d;">
+                <td style="padding: 12px 16px;"><code style="color:#e3b341;">git stash</code></td>
+                <td style="padding: 12px 16px; color:#8b949e;">Temporarily shelve uncommitted changes</td>
+              </tr>
+              <tr style="border-bottom: 1px solid #21262d;">
+                <td style="padding: 12px 16px;"><code style="color:#e3b341;">git rebase main</code></td>
+                <td style="padding: 12px 16px; color:#8b949e;">Replay your commits on top of main</td>
+              </tr>
+              <tr>
+                <td style="padding: 12px 16px;"><code style="color:#e3b341;">git log --oneline --graph</code></td>
+                <td style="padding: 12px 16px; color:#8b949e;">Visualise branch history in terminal</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </frame>
+    <voice start="0.5s" end="7s">
+      Here's a quick cheat sheet for the commands you'll reach for every day.
+      Bookmark it, memorise it, and your team will thank you.
+    </voice>
+  </segment>
+</ytml>

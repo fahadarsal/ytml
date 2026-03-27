@@ -1,10 +1,25 @@
-ytml.egg-info/
+# Virtual environments
 venv/
-ytml_toolkit.egg-info/
-dist/
-.pypirc
 venv1/
 newenv/
-ytml/*/__pycache__/
-ytml/__pycache__/
-ytml/tmp/
+
+# Build artefacts
+dist/
+*.egg-info/
+build/
+
+# Python cache
+__pycache__/
+*.pyc
+*.pyo
+.pytest_cache/
+
+# Secrets
+.pypirc
+.env
+
+# Generated outputs (not source — produced by running ytml)
+*.mp4
+preview.html
+tmp/
+assets/
