@@ -15,7 +15,7 @@ except ImportError:
         def __getattr__(self, _): return ""
     Fore = Style = _NoColor()
 
-VERSION = "0.2.13"
+VERSION = "0.4.0"
 
 HELLO_WORLD_TEMPLATE = """\
 <ytml>
