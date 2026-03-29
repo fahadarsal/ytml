@@ -14,6 +14,7 @@ class Config:
     IMAGE_DURATION: str = "5s"  # Default display time for images
     ANIMATION_DELAY = 50
     MERMAID_THEME = 'dark'
+    OVERLAY_FRAME_RATE: int = 10  # FPS for video overlay rendering (lower = faster)
 
     # Video Output Settings
     VIDEO_HEIGHT: str = 1088  # Video resolution (width x height)

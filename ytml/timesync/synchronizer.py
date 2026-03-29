@@ -12,13 +12,15 @@ class TimeSyncAlchemist:
     def calculate_audio_duration(self, timing_metadata):
         """
         Calculate the total duration of audio based on timing metadata.
-        Considers multiple voice tags in a segment.
+
+        Each entry has absolute ``start`` and ``end`` timestamps within the
+        segment, so the overall audio span is simply the latest ``end`` value.
+        (Previously this computed ``start + end``, treating ``end`` as a
+        duration — that made videos the wrong length.)
         """
         max_duration = 0
         for entry in timing_metadata:
-            start = entry["start"]
-            end = entry["end"]
-            max_duration = max(max_duration, start + end)
+            max_duration = max(max_duration, entry["end"])
         return max_duration
 
     def get_video_duration(self, video_file):

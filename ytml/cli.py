@@ -128,6 +128,10 @@ examples:
                         help="Show CLI version.")
     parser.add_argument("--verbose", action="store_true",
                         help="Enable detailed logging.")
+    parser.add_argument("--no-cache", action="store_true",
+                        help="Disable voiceover cache (always regenerate).")
+    parser.add_argument("--cache-dir", default=None,
+                        help="Directory for voiceover cache (default: tmp/voice_cache).")
 
     args = parser.parse_args()
 
@@ -199,6 +203,7 @@ examples:
 
     from ytml.vocalforge.gtts_vocal_forge import gTTSVocalForge
     from ytml.vocalforge.xi_labs_vocal_forge import ElevenLabsVocalForge
+    from ytml.vocalforge.voice_cache import VoiceCache
 
     if not args.use_gtts and config.ENABLE_AI_VOICE:
         if not check_elevenlabs_key():
@@ -206,11 +211,44 @@ examples:
                 Fore.YELLOW + "Falling back to gTTS. Use --use-gtts to suppress this message." + Style.RESET_ALL)
             args.use_gtts = True
 
-    vocal_forge = gTTSVocalForge(
-    ) if args.use_gtts or not config.ENABLE_AI_VOICE else ElevenLabsVocalForge(config.AI_VOICE_ID)
+    # Set up voiceover cache (enabled by default, disable with --no-cache)
+    voice_cache = VoiceCache(
+        cache_dir=args.cache_dir,
+        enabled=not args.no_cache,
+    )
+    if voice_cache.enabled:
+        stats = voice_cache.stats()
+        print(f"  {Fore.CYAN}Voice cache:{Style.RESET_ALL} {stats['valid_files']} cached entries "
+              f"({stats['cache_dir']})")
+
+    if args.use_gtts or not config.ENABLE_AI_VOICE:
+        vocal_forge = gTTSVocalForge(cache=voice_cache)
+    else:
+        vocal_forge = ElevenLabsVocalForge(config.AI_VOICE_ID, cache=voice_cache)
     conductor = Conductor(vocal_forge, args.output, config=config)
-    conductor.run_workflow(
-        args.input, skip_steps=args.skip or [], job=args.job)
+    try:
+        conductor.run_workflow(
+            args.input, skip_steps=args.skip or [], job=args.job)
+    except KeyboardInterrupt:
+        print(Fore.YELLOW + "\n[INTERRUPTED] Job stopped. "
+              f"Resume with: ytml --resume {conductor.job_id}" + Style.RESET_ALL)
+        sys.exit(1)
+    except (ValueError, FileNotFoundError) as e:
+        print(Fore.RED + f"[ERROR] {e}" + Style.RESET_ALL)
+        if args.verbose:
+            raise
+        sys.exit(1)
+    except RuntimeError as e:
+        print(Fore.RED + f"[ERROR] {e}" + Style.RESET_ALL)
+        if args.verbose:
+            raise
+        sys.exit(1)
+    except Exception as e:
+        print(Fore.RED + f"[ERROR] Unexpected error: {e}" + Style.RESET_ALL)
+        print(Fore.YELLOW + "Run with --verbose for the full traceback." + Style.RESET_ALL)
+        if args.verbose:
+            raise
+        sys.exit(1)
 
 
 if __name__ == "__main__":

@@ -108,13 +108,52 @@ class HtmlPreprocessor:
         except Exception as e:
             raise RuntimeError(f"Failed to preprocess HTML: {e}")
 
+    def preprocess_overlay(self, html_content, styles=None):
+        """
+        Preprocess HTML overlay content for transparent rendering on top of a video.
+        Same as preprocess() but forces a transparent body background so Playwright
+        can capture frames with omit_background=True.
+        """
+        try:
+            head_tag = self._get_head_tag(
+                html_content, styles, include_css=False, include_js=True, include_animations=True)
+
+            if "<mermaid>" in html_content:
+                html_content = html_content.replace(
+                    "<mermaid>", "<div class='mermaid'>").replace("</mermaid>", "</div>")
+
+            html_template = f"""<html>
+{head_tag}
+<body style="margin:0;padding:0;background:transparent;">
+    <div style="position:relative;width:100%;height:100%;">{html_content}</div>
+</body>
+</html>"""
+            html_template = html_template.replace(
+                "../", "http://localhost:8000/")
+            return html_template
+        except Exception as e:
+            raise RuntimeError(f"Failed to preprocess overlay HTML: {e}")
+
     def preview(self, parsed_json):
+        """
+        Generate a single preview HTML page containing every segment.
+
+        Includes:
+        - ``<frame>`` content from HTML slides
+        - ``<video>`` overlay HTML (captions, cards, labels) rendered on a
+          dark placeholder background so the user can preview caption
+          timing and layout without running the full pipeline.
+        """
         html_body = ""
-        head_tag = ""
         combined_content = ""
+
+        # First pass: collect all content for CDN detection
         for segment in parsed_json.get("segments", []):
             for frame in segment.get("frames", []):
                 combined_content += frame
+            vs = segment.get("video_source")
+            if vs and vs.get("overlay_html", "").strip():
+                combined_content += vs["overlay_html"]
 
         head_tag = self._get_head_tag(
             combined_content,
@@ -123,13 +162,47 @@ class HtmlPreprocessor:
             include_animations=True,
         )
 
-        for segment in parsed_json.get("segments", []):
+        # Second pass: build the body
+        for seg_idx, segment in enumerate(parsed_json.get("segments", [])):
+            # ── <frame> segments ─────────────────────────────────────
             for frame in segment.get("frames", []):
                 html_content = frame
                 if "<mermaid>" in html_content:
                     html_content = html_content.replace(
                         "<mermaid>", "<div class='mermaid'>").replace("</mermaid>", "</div>")
                 html_body += html_content
+
+            # ── <video> overlay previews ─────────────────────────────
+            vs = segment.get("video_source")
+            if vs:
+                overlay = vs.get("overlay_html", "").strip()
+                src = vs.get("src", "?")
+                clip_start = vs.get("clip_start", 0)
+                clip_end = vs.get("clip_end")
+                speed = vs.get("speed", 1)
+                end_label = f"{clip_end}s" if clip_end else "end"
+                duration = segment.get("duration")
+                dur_label = f" = {duration:.1f}s" if duration else ""
+
+                # Segment label
+                html_body += (
+                    f'<div style="position:relative;width:1920px;height:1088px;'
+                    f'background:linear-gradient(135deg,#111,#1a1a2e);overflow:hidden;">'
+                    # Video info banner
+                    f'<div style="position:absolute;top:0;left:0;right:0;background:rgba(0,0,0,0.7);'
+                    f'padding:12px 24px;font-family:monospace;font-size:14px;color:#888;z-index:9999;'
+                    f'display:flex;justify-content:space-between;">'
+                    f'<span>🎬 Segment {seg_idx + 1} — &lt;video src=&quot;{src}&quot;&gt;</span>'
+                    f'<span>{clip_start}s → {end_label} @ {speed}x{dur_label}</span>'
+                    f'</div>'
+                )
+
+                # Embed the overlay styles + HTML
+                styles = segment.get("styles", "") or ""
+                if styles:
+                    html_body += f"<style>{styles}</style>"
+                html_body += overlay
+                html_body += '</div>'
 
         html_body = re.sub(r'<object([^>]*)/>',
                            r'<object\1></object>', html_body)

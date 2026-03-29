@@ -6,6 +6,47 @@ Versions follow [Semantic Versioning](https://semver.org/).
 
 ---
 
+## [0.4.0] — 2026-03-28
+
+### Added
+
+**`<video>` Tag — embed, edit, and overlay videos from YTML**
+- Trim source videos to a precise time range (`start` / `end` attributes).
+- Adjust playback speed with `speed="0.5x"`, `1x`, `2x`, etc.
+- Overlay arbitrary HTML/CSS on top of the video — captions, commentary cards,
+  labels, stats, emoji floods, or any DOM element.
+- Overlay frames are rendered at `VIDEO_WIDTH x VIDEO_HEIGHT` via Playwright
+  as transparent PNGs and composited with FFmpeg.
+- CSS `@keyframes` and `animation-delay` work for timed caption visibility.
+- Automatic video size normalisation — source videos are scaled and
+  letterboxed / pillarboxed to match the configured output resolution before
+  processing, preventing dimension-mismatch artefacts during concatenation.
+
+**Parser**
+- `<video>` inner HTML is CDATA-wrapped during preprocessing so that overlay
+  markup (`<div>`, `<style>`, etc.) survives the XML parser.
+- `overlay_html` and `video_source` fields added to the parsed segment dict.
+
+**FFmpeg utilities**
+- `FFMpegWizard.get_video_dimensions()` — returns `(width, height)` of a video.
+- `FFMpegWizard.normalize_video_size()` — scales and pads a video to an exact
+  resolution with aspect-ratio-preserving letterbox/pillarbox.
+
+**Documentation**
+- New Docusaurus page: [The `<video>` Tag](/docs/video) — full reference with
+  examples for captions, overlays, slow-motion, and commentary cards.
+- `tags.md` updated with `<video>` row.
+- `future.md` updated — `<video>` marked as shipped.
+
+**Samples**
+- `friends-breakdown.ytml` — full Friends episode commentary showcasing video
+  overlays: timed captions, animated commentary cards, rejection stamps,
+  character labels, slow-motion replay, and stat-bar outro.
+- `video-reaction.ytml` — short, focused sample demonstrating the `<video>` tag
+  with caption overlay, commentary card, and slow-motion replay.
+
+---
+
 ## [0.3.0] — 2026-03-27
 
 ### Added

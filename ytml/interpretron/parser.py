@@ -45,6 +45,16 @@ class YTMLParser:
             content,
             flags=re.DOTALL
         )
+
+        # Wrap <video> inner content in <![CDATA[ ... ]]> so overlay HTML
+        # (child elements like <div>) is preserved as raw text, not parsed as XML.
+        content = re.sub(
+            r"(<video[^>]*>)(.*?)(</video>)",
+            lambda match: f"{match.group(1)}<![CDATA[{match.group(2)}]]>{match.group(3)}",
+            content,
+            flags=re.DOTALL
+        )
+
         return content
 
     def parse(self):
@@ -126,6 +136,26 @@ class YTMLParser:
                 frame.get('duration') or '2s')
             parsed_composite['frame_rate'] = frame.get('frame_rate')
             parsed_composite["static"] = parse_boolean(frame.get("static"))
+
+        # Parse <video> tag (mutually exclusive with <frame> tags)
+        video_tag = composite.find("video")
+        if video_tag is not None:
+            overlay_html = video_tag.text.strip() if video_tag.text else ""
+            speed_raw = (video_tag.get("speed") or "1x").rstrip("x")
+            speed = float(speed_raw)
+            clip_start = parse_duration(video_tag.get("start") or "0s")
+            clip_end_raw = video_tag.get("end")
+            clip_end = parse_duration(clip_end_raw) if clip_end_raw else None
+            parsed_composite["video_source"] = {
+                "src": video_tag.get("src"),
+                "clip_start": clip_start,
+                "clip_end": clip_end,
+                "speed": speed,
+                "overlay_html": overlay_html,
+            }
+            if clip_end is not None:
+                parsed_composite["duration"] = (clip_end - clip_start) / speed
+            # else duration resolved at render time via ffprobe
 
         # Expand <use> tags with templates
         for use in composite.findall("use"):

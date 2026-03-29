@@ -104,7 +104,7 @@
             </div>
             <div style="
               display: flex; align-items: flex-start; gap: 20px;
-              animation: slideInLeft 0.7s 0.9s ease-out both;
+              animation: fadeUp 0.7s 0.9s ease-out both;
             ">
               <span style="font-size: 1.8em; min-width: 44px;">🎭</span>
               <div>
@@ -116,9 +116,9 @@
         </div>
       </div>
       <style>
-        @keyframes slideInLeft {
-          from { opacity: 0; transform: translateX(-50px); }
-          to   { opacity: 1; transform: translateX(0); }
+        @keyframes fadeUp {
+          from { opacity: 0; transform: translateY(18px); }
+          to   { opacity: 1; transform: translateY(0); }
         }
       </style>
     </frame>
@@ -133,56 +133,35 @@
 
   <!-- ── Slide 3 : What is RAG — Mermaid overview ──────────────────── -->
   <segment>
-    <frame duration="22s">
+    <frame duration="22s" static="true">
       <div style="
         height: 100vh; background: #0d0d0d;
         display: flex; flex-direction: column;
         align-items: center; justify-content: center;
-        font-family: 'Segoe UI', sans-serif; padding: 16px 48px 24px;
+        font-family: 'Segoe UI', sans-serif; padding: 40px;
       ">
-        <h2 style="
-          color: #8b5cf6; font-size: 1.7em; margin: 0 0 16px;
-          animation: titleDrop 0.7s ease-out both;
-        ">How RAG works</h2>
-        <div style="
-          width: 100%; flex: 1;
-          display: flex; align-items: center; justify-content: center;
-          animation: diagramReveal 1.1s 0.4s ease-out both;
-        ">
-          <mermaid>
-            flowchart LR
-              A["📄 Your Documents"] --> B["Chunk + Embed"]
-              B --> C[("🗄️ Vector DB")]
+        <h2 style="color: #8b5cf6; font-size: 2em; margin: 0 0 32px;">How RAG works</h2>
+        <mermaid>
+          flowchart LR
+            A["📄 Your Documents"] --> B["Chunk + Embed"]
+            B --> C[("🗄️ Vector DB")]
 
-              D["❓ User Query"] --> E["Embed Query"]
-              E --> F["Similarity Search"]
-              F --> C
-              C --> G["Top-K Chunks"]
+            D["❓ User Query"] --> E["Embed Query"]
+            E --> F["Similarity Search"]
+            F --> C
+            C --> G["Top-K Chunks"]
 
-              G --> H["Build Prompt"]
-              D --> H
-              H --> I["🤖 LLM"]
-              I --> J["✅ Grounded Answer"]
+            G --> H["Build Prompt"]
+            D --> H
+            H --> I["🤖 LLM"]
+            I --> J["✅ Grounded Answer"]
 
-              style A fill:#1e1b4b,color:#a78bfa
-              style C fill:#1e1b4b,color:#a78bfa
-              style I fill:#1e1b4b,color:#a78bfa
-              style J fill:#14532d,color:#86efac
-          </mermaid>
-        </div>
+            style A fill:#1e1b4b,color:#a78bfa
+            style C fill:#1e1b4b,color:#a78bfa
+            style I fill:#1e1b4b,color:#a78bfa
+            style J fill:#14532d,color:#86efac
+        </mermaid>
       </div>
-      <style>
-        @keyframes titleDrop {
-          from { opacity: 0; transform: translateY(-18px); }
-          to   { opacity: 1; transform: translateY(0); }
-        }
-        @keyframes diagramReveal {
-          from { opacity: 0; transform: scale(0.88) translateY(40px); }
-          to   { opacity: 1; transform: scale(1) translateY(0); }
-        }
-        .mermaid { width: 100%; }
-        .mermaid svg { width: 100% !important; height: auto !important; min-height: 480px; }
-      </style>
     </frame>
     <voice start="0.5s" end="21s">
       RAG has two phases. Offline: your documents are chunked, embedded into vectors,
@@ -239,18 +218,12 @@ index("Our refund policy is 30 days...", "doc-001")
         </div>
       </div>
       <style>
-        @keyframes codeSlideIn {
-          from { opacity: 0; transform: translateY(28px); box-shadow: none; }
-          to   { opacity: 1; transform: translateY(0); box-shadow: 0 0 40px rgba(139,92,246,0.18); }
+        @keyframes fadeIn {
+          from { opacity: 0; }
+          to   { opacity: 1; }
         }
-        @keyframes badgePop {
-          from { opacity: 0; transform: scale(0.6); }
-          to   { opacity: 1; transform: scale(1); }
-        }
-        pre { background: #1a1a2e; border-radius: 10px; padding: 28px; margin: 0;
-              animation: codeSlideIn 0.9s 0.25s ease-out both; }
+        pre { background: #1a1a2e; border-radius: 10px; padding: 28px; margin: 0; }
         pre code { font-size: 0.95em; line-height: 1.7; }
-        span.badge { animation: badgePop 0.5s cubic-bezier(0.34,1.56,0.64,1) both; }
       </style>
     </frame>
     <voice start="0.5s" end="27s">
@@ -301,12 +274,11 @@ def retrieve(query: str, top_k: int = 3) -> list[str]:
         </div>
       </div>
       <style>
-        @keyframes codeSlideIn {
-          from { opacity: 0; transform: translateY(28px); box-shadow: none; }
-          to   { opacity: 1; transform: translateY(0); box-shadow: 0 0 40px rgba(6,182,212,0.18); }
+        @keyframes fadeIn {
+          from { opacity: 0; }
+          to   { opacity: 1; }
         }
-        pre { background: #0a1929; border-radius: 10px; padding: 28px; margin: 0;
-              animation: codeSlideIn 0.9s 0.25s ease-out both; }
+        pre { background: #0a1929; border-radius: 10px; padding: 28px; margin: 0; }
         pre code { font-size: 0.95em; line-height: 1.7; }
       </style>
     </frame>
@@ -361,12 +333,11 @@ answer = rag("What is your refund policy?")
         </div>
       </div>
       <style>
-        @keyframes codeSlideIn {
-          from { opacity: 0; transform: translateY(28px); box-shadow: none; }
-          to   { opacity: 1; transform: translateY(0); box-shadow: 0 0 40px rgba(74,222,128,0.15); }
+        @keyframes fadeIn {
+          from { opacity: 0; }
+          to   { opacity: 1; }
         }
-        pre { background: #0a1a0f; border-radius: 10px; padding: 28px; margin: 0;
-              animation: codeSlideIn 0.9s 0.25s ease-out both; }
+        pre { background: #0a1a0f; border-radius: 10px; padding: 28px; margin: 0; }
         pre code { font-size: 0.95em; line-height: 1.7; }
       </style>
     </frame>
@@ -389,23 +360,23 @@ answer = rag("What is your refund policy?")
         font-family: 'Segoe UI', sans-serif; padding: 60px;
       ">
         <div style="max-width: 900px; width: 100%;">
-          <h2 style="color: #a78bfa; font-size: 2.4em; margin: 0 0 40px; animation: blurIn 0.8s ease-out both;">
+          <h2 style="color: #a78bfa; font-size: 2.4em; margin: 0 0 40px; animation: fadeUp 0.7s ease-out both;">
             Why RAG is the go-to pattern
           </h2>
           <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 24px;">
-            <div style="background: rgba(139,92,246,0.1); border: 1px solid rgba(139,92,246,0.3); border-radius: 12px; padding: 24px; animation: slideInLeft 0.7s 0.15s ease-out both;">
+            <div style="background: rgba(139,92,246,0.1); border: 1px solid rgba(139,92,246,0.3); border-radius: 12px; padding: 24px; animation: fadeUp 0.7s 0.2s ease-out both;">
               <p style="color: #a78bfa; font-size: 1.1em; font-weight: 700; margin: 0 0 8px;">No retraining</p>
               <p style="color: #ccc; font-size: 1em; margin: 0; line-height: 1.5;">Update your docs and the model's knowledge updates instantly.</p>
             </div>
-            <div style="background: rgba(6,182,212,0.1); border: 1px solid rgba(6,182,212,0.3); border-radius: 12px; padding: 24px; animation: slideInRight 0.7s 0.3s ease-out both;">
+            <div style="background: rgba(6,182,212,0.1); border: 1px solid rgba(6,182,212,0.3); border-radius: 12px; padding: 24px; animation: fadeUp 0.7s 0.4s ease-out both;">
               <p style="color: #06b6d4; font-size: 1.1em; font-weight: 700; margin: 0 0 8px;">Data stays private</p>
               <p style="color: #ccc; font-size: 1em; margin: 0; line-height: 1.5;">Documents never leave your infrastructure — only relevant chunks are sent.</p>
             </div>
-            <div style="background: rgba(74,222,128,0.1); border: 1px solid rgba(74,222,128,0.3); border-radius: 12px; padding: 24px; animation: slideInLeft 0.7s 0.45s ease-out both;">
+            <div style="background: rgba(74,222,128,0.1); border: 1px solid rgba(74,222,128,0.3); border-radius: 12px; padding: 24px; animation: fadeUp 0.7s 0.6s ease-out both;">
               <p style="color: #4ade80; font-size: 1.1em; font-weight: 700; margin: 0 0 8px;">Any LLM, any data</p>
               <p style="color: #ccc; font-size: 1em; margin: 0; line-height: 1.5;">Works with GPT, Claude, Llama — and PDFs, databases, wikis, APIs.</p>
             </div>
-            <div style="background: rgba(251,191,36,0.1); border: 1px solid rgba(251,191,36,0.3); border-radius: 12px; padding: 24px; animation: slideInRight 0.7s 0.6s ease-out both;">
+            <div style="background: rgba(251,191,36,0.1); border: 1px solid rgba(251,191,36,0.3); border-radius: 12px; padding: 24px; animation: fadeUp 0.7s 0.8s ease-out both;">
               <p style="color: #fbbf24; font-size: 1.1em; font-weight: 700; margin: 0 0 8px;">Citable answers</p>
               <p style="color: #ccc; font-size: 1em; margin: 0; line-height: 1.5;">Return source chunks alongside the answer — full transparency.</p>
             </div>
@@ -413,17 +384,9 @@ answer = rag("What is your refund policy?")
         </div>
       </div>
       <style>
-        @keyframes blurIn {
-          from { opacity: 0; filter: blur(8px); }
-          to   { opacity: 1; filter: blur(0); }
-        }
-        @keyframes slideInLeft {
-          from { opacity: 0; transform: translateX(-40px); }
-          to   { opacity: 1; transform: translateX(0); }
-        }
-        @keyframes slideInRight {
-          from { opacity: 0; transform: translateX(40px); }
-          to   { opacity: 1; transform: translateX(0); }
+        @keyframes fadeUp {
+          from { opacity: 0; transform: translateY(16px); }
+          to   { opacity: 1; transform: translateY(0); }
         }
       </style>
     </frame>
