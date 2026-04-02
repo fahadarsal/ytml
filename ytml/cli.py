@@ -106,6 +106,7 @@ examples:
   ytml -i video.ytml -o out.mp4 --use-gtts    generate video (free TTS)
   ytml -i video.ytml -o out.mp4               generate video (Eleven Labs AI)
   ytml -i video.ytml --preview                preview HTML structure
+  ytml -i video.ytml -o out.mp4 --job-id my-video   use a named job folder
   ytml --resume <uuid>                         resume a stopped job
         """
     )
@@ -120,6 +121,8 @@ examples:
                         "parse", "voiceover", "render", "sync", "compose"], help="Steps to skip.")
     parser.add_argument(
         "--resume", help="Resume a job using the provided UUID.")
+    parser.add_argument(
+        "--job-id", dest="job_id", help="Custom job ID to use instead of a random UUID (e.g. my-tutorial).")
     parser.add_argument(
         "--job", help="Job ID of voiceovers to reuse. Requires --skip voiceover.")
     parser.add_argument("--preview", action="store_true",
@@ -194,8 +197,13 @@ examples:
         conductor = Conductor(
             None, args.output, config=Config(), job_id=args.resume)
         status = conductor.get_job_status()
-        skip_steps = [stage for stage in ["parse", "voiceover",
-                                          "render", "sync"] if status.get(f"{stage}.json")]
+        stage_to_file = {
+            "parse": "parsed.json",
+            "voiceover": "voice_metadata.json",
+            "render": "segment_videos.json",
+            "sync": "synchronized_videos.json",
+        }
+        skip_steps = [stage for stage, fname in stage_to_file.items() if status.get(fname)]
         conductor.run_workflow(f"{job_dir}/parsed.json", skip_steps)
         return
 
@@ -225,7 +233,7 @@ examples:
         vocal_forge = gTTSVocalForge(cache=voice_cache)
     else:
         vocal_forge = ElevenLabsVocalForge(config.AI_VOICE_ID, cache=voice_cache)
-    conductor = Conductor(vocal_forge, args.output, config=config)
+    conductor = Conductor(vocal_forge, args.output, config=config, job_id=args.job_id)
     try:
         conductor.run_workflow(
             args.input, skip_steps=args.skip or [], job=args.job)
